@@ -1,25 +1,28 @@
-# Customer Churn Prediction System
+# 📊 Telecom Customer Churn Prediction System
 
-## Project Overview
-A Machine Learning based Customer Churn Prediction System that predicts whether a customer is likely to leave a service or continue using it.
+![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)
+![Framework](https://img.shields.io/badge/Streamlit-FF4B4B?logo=Streamlit&logoColor=white)
+![ML](https://img.shields.io/badge/scikit--learn-F7931E?logo=scikit-learn&logoColor=white)
+![Testing](https://img.shields.io/badge/pytest-passing-brightgreen)
 
-The project uses data preprocessing, machine learning pipeline, and Streamlit to provide an interactive prediction application.
+## 📌 Overview
+An end-to-end Machine Learning web application designed to forecast customer attrition for telecommunications providers. The system identifies churn risk probabilities in real time and suggests actionable retention strategies.
 
-## Features
-- Customer churn prediction using Machine Learning
-- Data preprocessing pipeline
-- Exploratory Data Analysis (EDA)
-- Interactive Streamlit web application
-- Prediction based on customer details
+---
 
-## Technologies Used
-- Python
-- Pandas
-- NumPy
-- Scikit-Learn
-- Streamlit
-- Matplotlib
-- Seaborn
-- Power BI
-
-## Project Structure
+## 🏗️ Project Architecture
+```text
+Customer-Churn-Prediction-System/
+├── app/
+│   └── app.py               # Streamlit web dashboard
+├── data/                    # Dataset storage
+├── models/
+│   └── customer_churn_pipeline.pkl  # Trained ML pipeline
+├── notebooks/
+│   └── churn_pipeline.ipynb # EDA & model training
+├── src/
+│   └── predict.py           # Preprocessing & inference pipeline
+├── tests/
+│   └── test_predict.py      # Automated unit tests
+├── requirements.txt         # Project dependencies
+└── README.md

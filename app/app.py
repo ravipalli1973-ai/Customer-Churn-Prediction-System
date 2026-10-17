@@ -1,20 +1,18 @@
 import streamlit as st
-import pandas as pd
 import pickle
 import os
+import sys
 
-# -----------------------------
-# Page Configuration
-# -----------------------------
+# Ensure src module is importable
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.predict import prepare_input_dataframe, make_prediction
+
 st.set_page_config(
     page_title="Customer Churn Prediction",
     page_icon="📊",
     layout="centered"
 )
 
-# -----------------------------
-# Title
-# -----------------------------
 st.title("📊 Customer Churn Prediction System")
 
 st.markdown("""
@@ -24,27 +22,17 @@ Fill in the customer details below and click **Predict Churn**.
 
 st.divider()
 
-# -----------------------------
-# Sidebar
-# -----------------------------
 st.sidebar.title("📌 About")
-
 st.sidebar.info("""
 **Customer Churn Prediction System**
 
 **Model**
-- Random Forest Classifier
-
-**Accuracy**
-- ~80%
+- Random Forest Classifier (~80% accuracy)
 
 **Developed By**
 - Ravipalli Tirumala Kumar
 """)
 
-# -----------------------------
-# Load Model (Cached)
-# -----------------------------
 @st.cache_resource
 def load_churn_model(path: str = os.path.join("models", "customer_churn_pipeline.pkl")):
     if not os.path.exists(path):
@@ -58,23 +46,13 @@ except Exception as e:
     st.error(f"⚠️ Error loading model pipeline: {e}")
     st.stop()
 
-# -----------------------------
-# Customer Details
-# -----------------------------
 st.subheader("Customer Information")
 
 gender = st.selectbox("Gender", ["Female", "Male"])
 senior = st.selectbox("Senior Citizen", ["No", "Yes"])
 partner = st.selectbox("Partner", ["No", "Yes"])
 dependents = st.selectbox("Dependents", ["No", "Yes"])
-
-tenure = st.number_input(
-    "Tenure (Months)",
-    min_value=0,
-    max_value=72,
-    value=12
-)
-
+tenure = st.number_input("Tenure (Months)", min_value=0, max_value=72, value=12)
 phone_service = st.selectbox("Phone Service", ["No", "Yes"])
 multiple_lines = st.selectbox("Multiple Lines", ["No", "Yes", "No phone service"])
 internet = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
@@ -95,64 +73,51 @@ payment = st.selectbox(
         "Credit card (automatic)"
     ]
 )
+monthly_charges = st.number_input("Monthly Charges", min_value=0.0, value=70.0)
 
-monthly_charges = st.number_input(
-    "Monthly Charges",
-    min_value=0.0,
-    value=70.0
-)
-
-total_charges = monthly_charges * tenure
-
-# -----------------------------
-# Predict
-# -----------------------------
 if st.button("🔍 Predict Churn"):
-    user_data = pd.DataFrame({
-        "gender": [gender],
-        "SeniorCitizen": [1 if senior == "Yes" else 0],
-        "Partner": [partner],
-        "Dependents": [dependents],
-        "tenure": [tenure],
-        "PhoneService": [phone_service],
-        "MultipleLines": [multiple_lines],
-        "InternetService": [internet],
-        "OnlineSecurity": [online_security],
-        "OnlineBackup": [online_backup],
-        "DeviceProtection": [device_protection],
-        "TechSupport": [tech_support],
-        "StreamingTV": [streaming_tv],
-        "StreamingMovies": [streaming_movies],
-        "Contract": [contract],
-        "PaperlessBilling": [paperless],
-        "PaymentMethod": [payment],
-        "MonthlyCharges": [monthly_charges],
-        "TotalCharges": [total_charges]
-    })
+    customer_dict = {
+        "gender": gender,
+        "senior": senior,
+        "partner": partner,
+        "dependents": dependents,
+        "tenure": tenure,
+        "phone_service": phone_service,
+        "multiple_lines": multiple_lines,
+        "internet": internet,
+        "online_security": online_security,
+        "online_backup": online_backup,
+        "device_protection": device_protection,
+        "tech_support": tech_support,
+        "streaming_tv": streaming_tv,
+        "streaming_movies": streaming_movies,
+        "contract": contract,
+        "paperless": paperless,
+        "payment": payment,
+        "monthly_charges": monthly_charges
+    }
 
-    prediction = pipeline.predict(user_data)
-    probability = pipeline.predict_proba(user_data)
+    input_df = prepare_input_dataframe(customer_dict)
+    prediction, churn_prob = make_prediction(pipeline, input_df)
 
     st.divider()
     st.subheader("Prediction Result")
 
-    if prediction[0] == 1:
+    if prediction == 1:
         st.error("🔴 High Risk of Churn")
-        st.metric("Churn Probability", f"{probability[0][1]*100:.2f}%")
+        st.metric("Churn Probability", f"{churn_prob * 100:.2f}%")
         st.warning("""
-### Recommendation
-- ✅ Offer a targeted discount or promotion
-- ✅ Recommend a 1-year or 2-year contract lock-in
-- ✅ Proactive customer outreach via account management
-- ✅ Conduct a technical checkup if fiber/DSL support issues exist
+### Recommended Retention Actions
+- ✅ Offer a targeted discount or promotional rate
+- ✅ Recommend transitioning to a long-term contract
+- ✅ Schedule proactive outreach via customer success
 """)
     else:
         st.success("🟢 Customer is likely to Stay")
-        st.metric("Stay Probability", f"{probability[0][0]*100:.2f}%")
+        st.metric("Stay Probability", f"{(1 - churn_prob) * 100:.2f}%")
         st.balloons()
         st.info("""
-### Recommendation
-- ✅ Customer profile indicates high satisfaction
-- ✅ Maintain service quality and standard engagement
-- ✅ Explore eligibility for loyalty incentives
+### Recommended Actions
+- ✅ Maintain service standards and monitor support logs
+- ✅ Consider enrolling customer in loyalty incentives
 """)

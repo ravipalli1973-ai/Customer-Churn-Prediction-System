@@ -25,6 +25,7 @@ def test_prepare_input_dataframe_shape():
     }
     df = prepare_input_dataframe(sample_data)
     assert isinstance(df, pd.DataFrame)
+    assert not df.empty
     assert df.shape[0] == 1
     assert "TotalCharges" in df.columns
     assert df["TotalCharges"].iloc[0] == 85.5 * 24

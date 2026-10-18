@@ -1,5 +1,7 @@
 # 📊 Telecom Customer Churn Prediction System
 
+[![CI Pipeline](https://github.com/ravipalli1973-ai/Customer-Churn-Prediction-System/actions/workflows/ci.yml/badge.svg)](https://github.com/ravipalli1973-ai/Customer-Churn-Prediction-System/actions/workflows/ci.yml)
+
 ![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)
 ![Framework](https://img.shields.io/badge/Streamlit-FF4B4B?logo=Streamlit&logoColor=white)
 ![ML](https://img.shields.io/badge/scikit--learn-F7931E?logo=scikit-learn&logoColor=white)

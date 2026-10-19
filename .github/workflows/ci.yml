@@ -9,24 +9,27 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
 
-    - name: Run unit tests with pytest
-      env:
-        PYTHONPATH: .
-      run: |
-        python -m pytest tests/ -v
+      - name: Run unit tests
+        env:
+          PYTHONPATH: .
+        run: |
+          python -m pytest tests/ -v
+
+      - name: Build Docker image to test containerization
+        run: |
+          docker build -t customer-churn-app:latest .
